@@ -8,12 +8,11 @@ use axum::{
 use hyper::{server::conn::AddrIncoming, Server};
 use serde::Deserialize;
 
-pub fn run() -> Result<Server<AddrIncoming, IntoMakeService<Router>>, anyhow::Error> {
+pub fn run(port: u16) -> Result<Server<AddrIncoming, IntoMakeService<Router>>, anyhow::Error> {
     let app = Router::new()
         .route("/health_check", get(health_check))
         .route("/subscriptions", post(subscriptions));
-
-    let addr = "127.0.0.1:8000".parse().unwrap();
+    let addr = format!("127.0.0.1:{}", port).parse()?;
     let server = axum::Server::bind(&addr).serve(app.into_make_service());
 
     Ok(server)
@@ -34,11 +33,11 @@ struct SubscribeFormData {
 async fn subscriptions(
     form: axum::extract::Form<SubscribeFormData>,
 ) -> Result<impl IntoResponse, crate::error::AppError> {
-    // 400 if the email or name are empty
+    // 422 if the email or name are empty
     if form.email.is_empty() || form.name.is_empty() {
-        return Err(crate::error::AppError(anyhow::anyhow!(
-            "Empty email or name"
-        )));
+        return Err(crate::error::AppError::UnprocessableEntity(
+            anyhow::anyhow!("email and name must be non-empty"),
+        ));
     }
 
     // 200 if everything is ok
