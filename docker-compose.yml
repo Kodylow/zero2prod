@@ -11,3 +11,4 @@ services:
       - 5432:5432
     command: postgres -N 1000
 # sqlx database create --database-url postgres://postgres:postgres@localhost:5432/newsletter
+# sqlx migrate run --database-url postgres://postgres:postgres@localhost:5432/newsletter

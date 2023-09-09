@@ -2,10 +2,13 @@ use zero2prod::run;
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
-    let port = std::env::var("PORT")
-        .unwrap_or_else(|_| "8000".to_string())
-        .parse()?;
-    let _ = run(port)?.await;
+    let config = zero2prod::configuration::get_config()?;
+    let pool = sqlx::PgPool::connect(&config.database.connection_string())
+        .await
+        .expect("Failed to connect to Postgres.");
+    let server = run(config.application.host, config.application.port, pool).await?;
+
+    server.await?;
 
     Ok(())
 }

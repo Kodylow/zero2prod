@@ -16,8 +16,19 @@ name = "zero2prod"
 anyhow = "1.0.75"
 axum = { version = "0.6.20", features = ["json", "macros"] }
 axum-macros = "0.3.8"
+chrono = { version = "0.4.30", features = ["serde"] }
+config = "0.13.3"
 hyper = "0.14.27"
 reqwest = "0.11.20"
 serde = { version = "1.0.188", features = ["derive"] }
-sqlx = "0.7.1"
+sqlx = { version = "0.7.1", features = [
+    "postgres",
+    "macros",
+    "runtime-tokio-rustls",
+    "uuid",
+    "chrono",
+    "migrate",
+    "any",
+] }
 tokio = { version = "1.32.0", features = ["full"] }
+uuid = { version = "1.4.1", features = ["serde", "v4"] }
